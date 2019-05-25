@@ -7,15 +7,20 @@
 //
 
 import UIKit
+import Sourceful
 
-class DocumentViewController: UIViewController {
-    
-    @IBOutlet weak var textView: UITextView!
+class DocumentViewController: UIViewController, SyntaxTextViewDelegate {
+    @IBOutlet weak var textView: SyntaxTextView!
     
     var document: Document?
     
+    let lexer = SwiftLexer()
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        textView.theme = DefaultSourceCodeTheme()
+        textView.delegate = self
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(handleShare))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissDocumentViewController))
@@ -24,7 +29,7 @@ class DocumentViewController: UIViewController {
         document?.open(completionHandler: { (success) in
             if success {
                 self.title = self.document?.fileURL.deletingPathExtension().lastPathComponent
-                self.textView.text = self.document?.text
+                self.textView.text = self.document!.text
             } else {
                 // Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
             }
@@ -46,5 +51,9 @@ class DocumentViewController: UIViewController {
         let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         activityViewController.popoverPresentationController?.barButtonItem = sender
         present(activityViewController, animated: true, completion: nil)
+    }
+    
+    func lexerForSource(_ source: String) -> Lexer {
+        return lexer
     }
 }
