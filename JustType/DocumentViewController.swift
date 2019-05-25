@@ -42,7 +42,9 @@ class DocumentViewController: UIViewController {
     
     @objc func handleShare(sender: UIBarButtonItem) {
         guard let url = document?.fileURL else { return }
-        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.barButtonItem = sender
+        present(activityViewController, animated: true, completion: nil)
     }
 }
